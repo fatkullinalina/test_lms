@@ -1,0 +1,243 @@
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+import "protos/Shared.proto";
+import "protos/Countries.proto";
+option csharp_namespace = "AuthCenter.Shared.Messages.UserInfo";
+
+package UserInfo;
+
+service UserInfo {
+  rpc GetCurrentUserShortName (google.protobuf.Empty) returns (CurrentUserShortNameResponse);
+  rpc GetUserMainInfo (Shared.UserIdentifierRequest) returns (GetUserMainInfoResponse);
+  rpc GetUserRoles (Shared.UserIdentifierRequest) returns (GetUserRolesResponse);
+  rpc GetExternalAppAccess (Shared.UserIdentifierRequest) returns (GetExternalAppAccessResponse);
+  rpc GetUserStudyGroups (Shared.UserIdentifierRequest) returns (GetUserStudyGroupsResponse);
+  
+  rpc GetUserNotifications (google.protobuf.Empty) returns (UserNotificationsResponse);
+
+  rpc GetUserList (google.protobuf.Empty) returns (GetUserListResponse);
+  rpc GetAllStudyGroups (google.protobuf.Empty) returns (GetAllStudyGroupsResponse);
+
+  rpc UpdateUserMainInfo (UpdateUserMainInfoRequest) returns (Shared.EmptyResponse);
+  rpc UpdateIndividualInsuranceAccountNumber (UpdateIndividualInsuranceAccountNumberRequest) returns (Shared.EmptyResponse);
+  rpc EditUserRoles (EditUserRolesRequest) returns (Shared.EmptyResponse);
+  rpc UpdateExternalAppAccess (UpdateExternalAppAccessRequest) returns (Shared.EmptyResponse);
+  rpc UpdateUserWork (UpdateUserWorkRequest) returns (Shared.EmptyResponse);
+  rpc UpdateAvatar (UpdateAvatarRequest) returns (Shared.Int32Response);
+
+  rpc CreatePersonalDocument(CreatePersonalDocumentRequest) returns (Shared.Int32Response);
+  rpc CreateCertificateOfEmployment(CreateCertificateOfEmploymentRequest) returns (Shared.Int32Response);
+
+  rpc CreateStudyGroupUser (CreateStudyGroupUserRequest) returns (Shared.EmptyResponse);
+}
+
+message WorkPlace {
+    int32 OrganizationId = 1;
+    string Organization = 2;
+    string Subdivision = 3;
+    string Position = 4;
+    repeated CertificateOfEmployment CertificateOfEmployments = 5;
+}
+
+message CertificateOfEmployment {
+    int32 Id = 1;
+    google.protobuf.Timestamp DateOfIssue = 2;
+    google.protobuf.Timestamp Time = 3;
+    google.protobuf.BoolValue Valid = 4;
+}
+
+message PersonalDocumentMessage {
+    int32 Id = 1;
+    string Name = 2;
+    int32 PersonalDocumentType = 3;
+    google.protobuf.BoolValue Valid = 4;
+    google.protobuf.Timestamp CreatedAt = 5;
+}
+
+message UserMainInfo {
+    string UserId = 1;
+    string UserName = 2;
+    string Email = 3;
+    string FirstName = 4;
+    string Surname = 5;
+    google.protobuf.StringValue MiddleName = 6;
+    google.protobuf.Int32Value ImageId = 7;
+    google.protobuf.Timestamp DateOfBirth = 8;
+    google.protobuf.Timestamp RegistrationTime = 9;
+    Countries.Country Citizenship = 10;
+    repeated WorkPlace WorkPlaces = 11;
+    repeated PersonalDocumentMessage PersonalDocuments = 12;
+    google.protobuf.StringValue PhoneNumber = 13;
+    repeated UserStudyCertificate StudyCertificates = 14;
+    repeated ExternalApp ExternalApps = 15;
+    google.protobuf.StringValue IndividualInsuranceAccountNumber = 17;
+}
+
+message UserRoles {
+    repeated string Roles = 2;
+}
+
+message CurrentUserShortNameResponse {
+  string ShortName = 1;
+}
+
+message GetUserMainInfoResponse {
+    Shared.Status Status = 1;
+    UserMainInfo UserMainInfo = 2;
+    UserRoles Roles = 3;
+}
+
+message UserStudyCertificate {
+    int32 StudyGroupId = 1;
+    string Name = 2;
+    google.protobuf.Int32Value ModuleId = 3;
+}
+
+message ExternalApp {
+    int32 Id = 1;
+    string Name = 2;
+}
+
+message GetUserRolesResponse{
+    Shared.Status Status = 1;
+    repeated string Roles = 2;
+}
+
+//Update Main Info
+message UpdateUserMainInfoRequest{
+    string UserId = 1;
+    string FirstName = 2;
+    string Surname = 3;
+    google.protobuf.StringValue MiddleName = 4;
+    google.protobuf.Timestamp DateOfBirth = 5;
+    int32 CountryId = 6;
+    google.protobuf.StringValue Phone = 7;
+}
+
+//UpdateIndividualInsuranceAccountNumber
+message UpdateIndividualInsuranceAccountNumberRequest{
+    string UserId = 1;
+    string IndividualInsuranceAccountNumber = 2;
+}
+
+//Edit Roles
+message EditUserRolesRequest{
+    string UserId = 1;
+    repeated string Roles = 2;
+}
+
+//UserNotifications
+message UserNotificationsResponse{
+    Shared.Status Status = 1;
+    repeated StudyRequestNotification StudyRequests = 2;
+}
+
+message StudyRequestNotification {
+    string CourseName = 1;
+}
+
+//UserList
+
+message UserListItem {
+    string UserId = 1;
+    string Name = 2;
+    google.protobuf.Timestamp RegistrationTime = 3;
+    string Email = 4;
+    bool EmailConfirmed = 5;
+    repeated string Roles = 6;
+}
+
+message GetUserListResponse{
+    Shared.Status Status = 1;
+    repeated UserListItem Users = 2;
+}
+
+// User Study Groups
+
+message StudyGroup {
+    string CourseId = 1;
+    string CourseName =  2;
+    int32 SessionId = 3;
+    string SessionName = 4;
+    int32 StudyGroupId = 5;
+    string StudyGroupName = 6;
+}
+
+message UserStudyGroup{
+    StudyGroup StudyGroup = 1;
+    int32 StudyGroupUserStatus = 2;
+    int32 ParticipantType = 3;
+}
+
+message GetUserStudyGroupsResponse {
+    Shared.Status Status = 1;
+    repeated UserStudyGroup UserStudyGroups = 2;
+}
+
+message GetAllStudyGroupsResponse {
+    Shared.Status Status = 1;
+    repeated StudyGroup StudyGroups = 2;
+}
+
+//UpdateUserWorkRequest
+message UpdateUserWorkRequest{
+    string UserId = 1;
+    int32 OrganizationId = 2;
+    int32 NewOrganizationId = 3;
+    string Subdivision = 4;
+    string Position = 5;
+}
+
+//UpdateAvatar
+message UpdateAvatarRequest{
+    string UserId = 1;
+    Shared.FileMessage FileMessage = 2;
+}
+
+//CreatePersonalDocument
+message CreatePersonalDocumentRequest {
+    string UserId = 1;
+    int32 PersonalDocumentType = 2;
+    Shared.FileMessage File = 3;
+}
+
+//CreateCertificateOfEmployment
+message CreateCertificateOfEmploymentRequest{
+    string UserId = 1;
+    google.protobuf.Timestamp DateOfIssue = 2;
+    int32 OrganizationId = 3;
+    Shared.FileMessage FileMessage = 4;
+}
+//
+
+message CreateStudyGroupUserRequest {
+    string UserId = 1;
+    int32 Status = 2;
+    int32 StudyGroupId = 3;
+    int32 ParticipantType = 4;
+}
+
+//GetExternalAppAccess
+message GetExternalAppAccessResponse {
+    Shared.Status Status = 1;
+    repeated ExternalAppUserAccess ExternalAppUserAccess = 2;
+}
+
+message ExternalAppUserAccess {
+    int32 AppId = 1;
+    string Name = 2;
+    bool HaveAccess = 3;
+}
+
+//UpdateExternalAppAccessRequest
+message UpdateExternalAppAccessRequest {
+    string UserId = 1;
+    repeated UpdateExternalAppUserAccess ExternalAppUserAccess = 2;
+}
+
+message UpdateExternalAppUserAccess {
+    int32 AppId = 1;
+    bool HaveAccess = 2;
+}

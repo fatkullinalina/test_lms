@@ -1,0 +1,57 @@
+syntax = "proto3";
+import "google/protobuf/wrappers.proto";
+option csharp_namespace = "AuthCenter.Shared.Messages.Shared";
+
+package Shared;
+
+message Status {
+	int32 Code = 1;
+	repeated string Errors = 2;
+}
+
+//Requests
+message UserIdentifierRequest {
+	string UserId = 1;
+}
+
+message Int32Request {
+	int32 Value = 1;
+}
+
+//Responses
+message EmptyResponse {
+	Status Status = 1;
+}
+
+message Int32Response {
+	Status Status = 1;
+	int32 Value = 2;
+}
+
+message StringResponse {
+	Status Status = 1;
+	google.protobuf.StringValue Value = 2;
+}
+
+message FileResponse {
+	Status Status = 1;
+	FileMessage File = 2;
+}
+
+message FileMessage {
+	string FileName = 1;
+	string ContentType = 2;
+	bytes File = 3;
+}
+
+/*Business logic commons*/
+message UserMessage {
+	string Id = 1;
+	string Name = 2;
+}
+
+message UserPreviewMessage {
+	string Id = 1;
+	string Name = 2;
+	google.protobuf.Int32Value ImageId = 3;
+}
